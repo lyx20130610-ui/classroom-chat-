@@ -7,152 +7,154 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- 1) 总邀请码 + 昵称 -->
-  <div id="gate-page" class="page">
-    <div class="card">
-      <h1>班级聊天室</h1>
-      <p class="subtitle">请输入总邀请码与昵称后进入（数据仅保存在本机浏览器）</p>
-      <form id="form-gate">
-        <div class="field">
-          <label for="gate-invite">总邀请码</label>
-          <input
-            id="gate-invite"
-            type="password"
-            name="invite"
-            autocomplete="off"
-            placeholder="学校提供的邀请码"
-            maxlength="32"
-          />
-        </div>
-        <div class="field">
-          <label for="gate-nickname">你的昵称</label>
-          <input
-            id="gate-nickname"
-            type="text"
-            name="nickname"
-            placeholder="例如：小明"
-            maxlength="20"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">进入</button>
-        <div id="gate-error" class="error-msg"></div>
-      </form>
-      <p class="hint">无需注册；更换浏览器需重新加入房间。</p>
-    </div>
-  </div>
-
-  <!-- 2) 大厅：创建 / 加入房间 -->
-  <div id="lobby-page" class="page hidden">
-    <div class="card">
-      <h1>聊天大厅</h1>
-      <p class="subtitle">你好，<strong id="lobby-display-name">—</strong></p>
-
-      <div class="tabs">
-        <button type="button" class="tab active" data-tab="create">创建房间</button>
-        <button type="button" class="tab" data-tab="join">加入房间</button>
+  <main>
+    <section id="gate-page" class="page auth-page">
+      <div class="brand-panel">
+        <p class="eyebrow">Classroom Chat</p>
+        <h1>只给同学看的聊天空间</h1>
+        <p class="subtitle">先输入总邀请码，再创建或加入 6 位数字房间。</p>
       </div>
 
-      <div class="panel" data-panel="create">
-        <form id="form-create">
+      <div class="card gate-card">
+        <form id="form-gate">
           <div class="field">
-            <label for="create-room-name">聊天室名称</label>
+            <label for="gate-invite">总邀请码</label>
             <input
-              id="create-room-name"
-              type="text"
-              placeholder="例如：高三（1）班交流"
-              maxlength="40"
-            />
-          </div>
-          <div class="field">
-            <label for="create-room-code">房间邀请码（他人加入时需填写）</label>
-            <input
-              id="create-room-code"
-              type="text"
-              placeholder="至少 4 位，勿与总邀请码混淆"
-              maxlength="32"
-              autocomplete="off"
-            />
-          </div>
-          <div class="field">
-            <label for="create-room-type">聊天类型</label>
-            <select id="create-room-type">
-              <option value="group">多人聊天室（群聊）</option>
-              <option value="private">2 人聊天室（私聊）</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-primary">创建并进入</button>
-          <div id="create-error" class="error-msg"></div>
-        </form>
-      </div>
-
-      <div class="panel hidden" data-panel="join">
-        <form id="form-join">
-          <div class="field">
-            <label for="join-room-id">房间 ID</label>
-            <input
-              id="join-room-id"
-              type="text"
-              placeholder="创建者告知的 r_xxxx 字样"
-              maxlength="32"
-              autocomplete="off"
-            />
-          </div>
-          <div class="field">
-            <label for="join-room-code">房间邀请码</label>
-            <input
-              id="join-room-code"
+              id="gate-invite"
               type="password"
-              placeholder="房间密码"
-              maxlength="32"
+              name="invite"
+              inputmode="numeric"
               autocomplete="off"
+              placeholder="输入老师不知道的邀请码"
+              maxlength="32"
             />
           </div>
-          <button type="submit" class="btn btn-primary">加入房间</button>
-          <div id="join-error" class="error-msg"></div>
+          <button type="submit" class="btn btn-primary">进入大厅</button>
+          <div id="gate-error" class="error-msg" role="alert"></div>
         </form>
+        <p class="hint">房间信息会同步到线上，浏览器只保存你的临时身份。</p>
       </div>
+    </section>
 
-      <div id="my-rooms">
-        <h3>已加入的房间</h3>
-        <div id="room-list" class="room-list"></div>
-      </div>
+    <section id="lobby-page" class="page hidden">
+      <div class="lobby-shell">
+        <div class="lobby-copy">
+          <p class="eyebrow">Lobby</p>
+          <h1>创建房间，或用房间号加入群聊</h1>
+          <p class="subtitle">房间号由系统生成，6 位数字，不会重复。</p>
+        </div>
 
-      <button type="button" class="btn btn-secondary" id="btn-logout">退出登录</button>
-    </div>
-  </div>
-
-  <!-- 3) 聊天室 -->
-  <div id="chat-page" class="page hidden">
-    <div class="chat-shell">
-      <aside class="chat-members">
-        <div class="chat-members-header">成员</div>
-        <div id="member-list"></div>
-      </aside>
-      <div class="chat-main">
-        <header class="chat-header">
-          <button type="button" class="btn btn-secondary" id="btn-back">← 返回大厅</button>
-          <div class="chat-title-block">
-            <div class="chat-title-row">
-              <span id="chat-title" class="chat-title">—</span>
-              <button type="button" id="btn-rename-room" class="btn-icon hidden" title="修改名称">
-                改名
-              </button>
-            </div>
-            <div id="chat-sub" class="chat-sub"></div>
+        <div class="card lobby-card">
+          <div class="tabs" role="tablist" aria-label="房间操作">
+            <button type="button" class="tab active" data-tab="join">加入房间</button>
+            <button type="button" class="tab" data-tab="create">创建房间</button>
           </div>
-        </header>
-        <div id="messages"></div>
-        <div id="input-area">
-          <textarea
-            id="msg-input"
-            rows="1"
-            placeholder="输入消息，Enter 发送，Shift+Enter 换行"
-          ></textarea>
-          <button type="button" id="send-btn">发送</button>
+
+          <div class="panel" data-panel="join">
+            <form id="form-join">
+              <div class="field">
+                <label for="join-room-id">6 位房间号</label>
+                <input
+                  id="join-room-id"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]{6}"
+                  placeholder="例如：483920"
+                  maxlength="6"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="field">
+                <label for="join-room-name">你在群聊里的名称</label>
+                <input
+                  id="join-room-name"
+                  type="text"
+                  placeholder="例如：小明"
+                  maxlength="20"
+                  autocomplete="off"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary">加入群聊</button>
+              <div id="join-error" class="error-msg" role="alert"></div>
+            </form>
+          </div>
+
+          <div class="panel hidden" data-panel="create">
+            <form id="form-create">
+              <div class="field">
+                <label for="create-room-name">房间名字</label>
+                <input
+                  id="create-room-name"
+                  type="text"
+                  placeholder="例如：晚自习讨论群"
+                  maxlength="40"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="field">
+                <label for="create-member-name">你在群聊里的名称</label>
+                <input
+                  id="create-member-name"
+                  type="text"
+                  placeholder="例如：小明"
+                  maxlength="20"
+                  autocomplete="off"
+                />
+              </div>
+              <div class="generated-room">
+                <span>房间号由系统自动生成</span>
+                <strong>6 位数字</strong>
+              </div>
+              <button type="submit" class="btn btn-primary">创建并进入</button>
+              <div id="create-error" class="error-msg" role="alert"></div>
+            </form>
+          </div>
+
+          <section id="my-rooms">
+            <div class="section-head">
+              <h2>已加入的房间</h2>
+              <button type="button" class="text-btn" id="btn-refresh-rooms">刷新</button>
+            </div>
+            <div id="room-list" class="room-list"></div>
+          </section>
+
+          <button type="button" class="btn btn-secondary" id="btn-logout">退出邀请码</button>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section id="chat-page" class="page hidden">
+      <div class="chat-shell">
+        <aside class="chat-members">
+          <div class="chat-members-header">成员</div>
+          <div id="member-list"></div>
+        </aside>
+        <div class="chat-main">
+          <header class="chat-header">
+            <button type="button" class="btn btn-secondary compact" id="btn-back">返回大厅</button>
+            <div class="chat-title-block">
+              <div class="chat-title-row">
+                <span id="chat-title" class="chat-title">未进入房间</span>
+                <button type="button" id="btn-rename-room" class="btn-icon hidden" title="修改名称">
+                  改名
+                </button>
+              </div>
+              <div id="chat-sub" class="chat-sub"></div>
+            </div>
+          </header>
+          <div id="messages" aria-live="polite"></div>
+          <div id="input-area">
+            <textarea
+              id="msg-input"
+              rows="1"
+              placeholder="输入消息，Enter 发送，Shift+Enter 换行"
+            ></textarea>
+            <button type="button" id="send-btn">发送</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="script.js"></script>
